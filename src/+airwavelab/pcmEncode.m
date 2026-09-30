@@ -1,0 +1,26 @@
+function packet = pcmEncode(signal, bitDepth)
+%PCMENCODE Uniformly quantize samples and serialize unsigned PCM codes.
+
+    airwavelab.validateSignal(signal);
+    validateattributes(bitDepth, {'numeric'}, ...
+        {'scalar', 'integer', '>=', 2, '<=', 24, 'finite'});
+    bitDepth = double(bitDepth);
+    scale = 2^(bitDepth-1);
+    clipped = max(-1, min(1-1/scale, signal.samples));
+    signedCodes = round(clipped*scale);
+    unsignedCodes = uint32(signedCodes + scale);
+
+    bitRows = false(numel(unsignedCodes), bitDepth);
+    for column = 1:bitDepth
+        bitRows(:, column) = bitget( ...
+            unsignedCodes, bitDepth-column+1) ~= 0;
+    end
+
+    packet = struct( ...
+        "format", "AirWaveLab unsigned-offset PCM", ...
+        "bitDepth", bitDepth, ...
+        "sampleRate", signal.sampleRate, ...
+        "sampleCount", numel(signal.samples), ...
+        "bitstream", reshape(bitRows.', [], 1), ...
+        "sourceName", signal.name);
+end

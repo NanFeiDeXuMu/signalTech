@@ -1,0 +1,13 @@
+function validateSignal(signal)
+%VALIDATESIGNAL Validate the canonical AirWaveLab signal structure.
+
+    required = {'samples', 'sampleRate', 'time', 'name'};
+    assert(isstruct(signal) && all(isfield(signal, required)), ...
+        "AirWaveLab:InvalidSignal", "Signal structure is missing required fields.");
+    validateattributes(signal.samples, {'double'}, ...
+        {'column', 'real', 'finite', 'nonempty'}, mfilename, 'signal.samples');
+    validateattributes(signal.sampleRate, {'double'}, ...
+        {'scalar', 'real', 'finite', 'positive'}, mfilename, 'signal.sampleRate');
+    assert(numel(signal.time) == numel(signal.samples), ...
+        "AirWaveLab:InvalidSignal", "Time and sample vectors must have equal length.");
+end

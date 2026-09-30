@@ -1,0 +1,19 @@
+function signal = createSignal(samples, sampleRate, name)
+%CREATESIGNAL Create the canonical AirWaveLab mono signal structure.
+
+    if nargin < 3
+        name = "unnamed";
+    end
+
+    validateattributes(samples, {'numeric'}, ...
+        {'vector', 'real', 'finite', 'nonempty'}, mfilename, 'samples');
+    validateattributes(sampleRate, {'numeric'}, ...
+        {'scalar', 'real', 'finite', 'positive'}, mfilename, 'sampleRate');
+
+    samples = double(samples(:));
+    signal = struct( ...
+        "samples", samples, ...
+        "sampleRate", double(sampleRate), ...
+        "time", reshape(0:numel(samples)-1, [], 1) / double(sampleRate), ...
+        "name", string(name));
+end

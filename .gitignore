@@ -1,0 +1,15 @@
+results/**
+tmp/**
+assets/audio/*.wav
+!assets/audio/reference.wav
+*.asv
+*.m~
+slprj/
+lab3/output/
+lab3/submission/
+lab3/task2/output/
+lab1/figures/
+lab1/report.pdf
+lab2/output/
+lab2/report.pdf
+__pycache__/

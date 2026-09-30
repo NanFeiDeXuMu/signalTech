@@ -1,0 +1,29 @@
+function metrics = compareSignals(reference, reconstruction)
+%COMPARESIGNALS Measure reconstruction error between aligned signals.
+
+    airwavelab.validateSignal(reference);
+    airwavelab.validateSignal(reconstruction);
+    assert(reference.sampleRate == reconstruction.sampleRate, ...
+        "AirWaveLab:SampleRateMismatch", ...
+        "Signals must have equal sample rates.");
+    assert(numel(reference.samples) == numel(reconstruction.samples), ...
+        "AirWaveLab:SampleCountMismatch", ...
+        "Signals must have equal sample counts.");
+
+    errorSamples = reference.samples - reconstruction.samples;
+    signalPower = mean(reference.samples.^2);
+    mse = mean(errorSamples.^2);
+    if mse == 0
+        snrDb = Inf;
+    elseif signalPower == 0
+        snrDb = -Inf;
+    else
+        snrDb = 10*log10(signalPower/mse);
+    end
+    metrics = struct( ...
+        "mse", mse, ...
+        "reconstructionSnrDb", snrDb, ...
+        "maxAbsoluteError", max(abs(errorSamples)), ...
+        "signalPower", signalPower, ...
+        "errorPower", mse);
+end
